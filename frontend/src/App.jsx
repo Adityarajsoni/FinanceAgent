@@ -2,21 +2,20 @@ import React, { useState } from "react";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Navbar from "./components/Navbar";
 import Dashboard from "./pages/Dashboard";
-import TradingDashboard from "./pages/TradingDashboard"; // ✅ Updated import
+import TradingDashboard from "./pages/TradingDashboard";
 import News from "./pages/News";
+import Opportunities from "./pages/Opportunities"; // ✅ Import new page
 
 function App() {
   const [isDarkMode, setIsDarkMode] = useState(false);
-  
+
   const handleThemeToggle = () => setIsDarkMode(!isDarkMode);
-  
+
   return (
     <Router>
       <Routes>
-        {/* ✅ Dashboard includes Navbar internally */}
         <Route path="/" element={<Dashboard />} />
-        
-        {/* ✅ Trading Dashboard page (formerly Tracker) */}
+
         <Route
           path="/trading"
           element={
@@ -26,8 +25,7 @@ function App() {
             </>
           }
         />
-        
-        {/* ✅ News page */}
+
         <Route
           path="/news"
           element={
@@ -35,6 +33,19 @@ function App() {
               <Navbar isDarkMode={isDarkMode} onThemeToggle={handleThemeToggle} />
               <div className="p-6">
                 <News isDarkMode={isDarkMode} />
+              </div>
+            </>
+          }
+        />
+
+        {/* ✅ New AI Opportunities page */}
+        <Route
+          path="/opportunities"
+          element={
+            <>
+              <Navbar isDarkMode={isDarkMode} onThemeToggle={handleThemeToggle} />
+              <div className="p-6">
+                <Opportunities />
               </div>
             </>
           }

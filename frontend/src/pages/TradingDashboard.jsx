@@ -3,11 +3,11 @@ import React, { useState, useEffect, useRef } from "react";
 import { Play, Pause, Activity } from "lucide-react";
 
 // Import components from components folder
-import PriceCard from '../components/PriceCard';
-import TradingControls from '../components/TradingControls';
-import ActivePosition from '../components/ActivePosition';
-import TradingHistory from '../components/TradingHistory';
-import Notifications from '../components/Notifications';
+import PriceCard from '../components/tradingDashboard/PriceCard';
+import TradingControls from '../components/tradingDashboard/TradingControls';
+import ActivePosition from '../components/tradingDashboard/ActivePosition';
+import TradingHistory from '../components/tradingDashboard/TradingHistory';
+import Notifications from '../components/tradingDashboard/Notifications';
 
 export default function TradingDashboard() {
   // Price and market data

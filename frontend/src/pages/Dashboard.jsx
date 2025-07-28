@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import Navbar from '../components/Navbar';
-import AIStatusCard from '../components/AIStatusCard';
-import ArbitrageOpportunities from '../components/ArbitrageOpportunities';
-import GlobalPriceMonitor from '../components/GlobalPriceMonitor';
-import ProfitAnalytics from '../components/ProfitAnalytics';
-import CallAlertSystem from '../components/CallAlertSystem';
-import TradeMonitoring from '../components/TradeMonitoring';
+import AIStatusCard from '../components/dashboard/AIStatusCard';
+import ArbitrageOpportunities from '../components/dashboard/ArbitrageOpportunities';
+import GlobalPriceMonitor from '../components/dashboard/GlobalPriceMonitor';
+import ProfitAnalytics from '../components/dashboard/ProfitAnalytics';
+import CallAlertSystem from '../components/dashboard/CallAlertSystem';
+import TradeMonitoring from '../components/dashboard/TradeMonitoring';
 
 export default function Dashboard() {
   const [isDarkMode, setIsDarkMode] = useState(false);
