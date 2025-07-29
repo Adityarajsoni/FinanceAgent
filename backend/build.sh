@@ -1,7 +1,6 @@
-#!/usr/bin/env bash
-# Install Python dependencies
-pip install --upgrade pip
+#!/bin/bash
+echo "🚀 Installing dependencies..."
 pip install -r requirements.txt
 
-# Install Playwright and browsers
-python -m playwright install --with-deps
+echo "🎭 Installing Playwright browsers..."
+python -m playwright install
