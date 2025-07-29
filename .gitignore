@@ -11,6 +11,7 @@ venv/
 env/
 backend/venv/
 frontend/node_modules/
+backend/node_modules
 
 # Playwright cache
 playwright/.cache/
