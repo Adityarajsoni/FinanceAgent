@@ -11,7 +11,7 @@ export default function Opportunities() {
   const analyzeMarket = async () => {
     setLoading(true);
     try {
-      const res = await fetch("http://127.0.0.1:5000/ai-analysis");
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/ai-analysis`);
       const data = await res.json();
       
       if (data.error) {

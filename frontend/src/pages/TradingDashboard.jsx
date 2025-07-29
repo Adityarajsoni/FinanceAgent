@@ -84,7 +84,7 @@ export default function TradingDashboard() {
     setIsRefreshing(true);
     
     try {
-      const res = await fetch("http://127.0.0.1:5000/silver-price");
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/silver-price`);
       const data = await res.json();
 
       if (data.currVal && data.currVal !== "--") {
@@ -114,7 +114,7 @@ export default function TradingDashboard() {
     }
 
     try {
-      const res = await fetch("http://127.0.0.1:5000/buy", {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/buy`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -147,7 +147,7 @@ export default function TradingDashboard() {
     if (!tradeId) return;
 
     try {
-      const res = await fetch("http://127.0.0.1:5000/sell", {
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/sell`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
@@ -200,7 +200,7 @@ export default function TradingDashboard() {
   // Fetch trading history
   const fetchTradingHistory = async () => {
     try {
-      const res = await fetch("http://127.0.0.1:5000/history");
+      const res = await fetch(`${import.meta.env.VITE_BACKEND_URL}/history`);
       if (res.ok) {
         const data = await res.json();
         setTradingHistory(data.completed_trades || []);
