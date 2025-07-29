@@ -6,8 +6,12 @@ export default function News({ isDarkMode = false }) {
   const [loading, setLoading] = useState(true);
   const [hoveredCard, setHoveredCard] = useState(null);
 
+
+
+// http://127.0.0.1:5000
+
   useEffect(() => {
-    fetch("http://127.0.0.1:5000/news")
+    fetch(`${import.meta.env.VITE_BACKEND_URL}/news`) 
       .then((res) => res.json())
       .then((data) => {
         if (data.news) {
