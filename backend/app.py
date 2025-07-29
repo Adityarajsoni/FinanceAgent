@@ -1,13 +1,11 @@
 import os
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from playwright.sync_api import sync_playwright, TimeoutError as PlaywrightTimeoutError
+from playwright.sync_api import sync_playwright
 import requests
 from dotenv import load_dotenv
 from datetime import datetime
 import feedparser
-import yfinance as yf
-import logging
 
 # Import technical analysis functions
 from technical_analysis import (
@@ -29,108 +27,55 @@ active_trades = {}
 completed_trades = []
 total_pnl = 0
 
-# Configure logging
-logging.basicConfig(level=logging.INFO)
-logger = logging.getLogger(__name__)
-
-def get_usd_to_inr_rate():
-    try:
-        response = requests.get("https://api.exchangerate-api.com/v4/latest/USD", timeout=10)
-        if response.status_code == 200:
-            return response.json()['rates']['INR']
-    except:
-        pass
-    return 83.0
 
 def get_latest_price():
-    """Enhanced scraper with better Render compatibility"""
-    
-    # Try Playwright scraping
+    """Scrape current silver price from shankarsilvermart.in with fallback methods"""
     try:
         with sync_playwright() as p:
-            # Render-optimized browser options
-            browser_args = [
-                '--no-sandbox',
-                '--disable-setuid-sandbox',
-                '--disable-dev-shm-usage',
-                '--disable-accelerated-2d-canvas',
-                '--disable-gpu',
-                '--single-process',
-                '--disable-web-security'
-            ]
-            
-            browser = p.chromium.launch(
-                headless=True,
-                args=browser_args
+            browser = p.chromium.launch(headless=True)
+            page = browser.new_page()
+            page.goto("http://www.shankarsilvermart.in/", wait_until="networkidle")
+            page.wait_for_selector(
+                "div#divProduct td.p-h.ph.product-rate div.mn-rate-cover span.bgm.e"
             )
-            
-            context = browser.new_context(
-                viewport={'width': 1920, 'height': 1080},
-                user_agent='Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36'
+            prices = page.query_selector_all(
+                "div#divProduct td.p-h.ph.product-rate div.mn-rate-cover span.bgm.e"
             )
-            
-            page = context.new_page()
-            
-            # Navigate with extended timeout
-            page.goto("http://www.shankarsilvermart.in/", 
-                     wait_until="networkidle", 
-                     timeout=30000)
-            
-            # Wait for content to load
-            page.wait_for_timeout(5000)
-            
-            # Try multiple selectors
-            selectors_to_try = [
-                "div#divProduct td.p-h.ph.product-rate div.mn-rate-cover span.bgm.e",
-                "span.bgm.e",
-                "div.mn-rate-cover span.bgm",
-                "td.product-rate span"
-            ]
-            
-            for selector in selectors_to_try:
-                try:
-                    page.wait_for_selector(selector, timeout=10000)
-                    prices = page.query_selector_all(selector)
-                    
-                    if prices:
-                        price_values = []
-                        for price_elem in prices:
-                            text = price_elem.inner_text().strip()
-                            if text and text != "--":
-                                price_values.append(text)
-                        
-                        if price_values:
-                            last_val = price_values[-1]
-                            if last_val.replace(",", "").isdigit():
-                                browser.close()
-                                return {"currVal": int(last_val.replace(",", ""))}
-                    
-                except:
-                    continue
-            
+            price_values = [el.inner_text() for el in prices]
             browser.close()
-            
+
+            last_val = price_values[-1] if price_values else "--"
+            if last_val != "--":
+                return {"currVal": int(last_val.replace(",", ""))}
     except Exception as e:
-        logger.error(f"Playwright failed: {e}")
+        print(f"Error scraping shankarsilvermart.in: {e}")
     
-    # Fallback to yfinance
+    # Fallback: Calculate approximate retail price based on spot + premium
     try:
+        print("Using fallback method for price calculation...")
+        import yfinance as yf
+        
         exchange_rate = get_usd_to_inr_rate()
         silver_data = yf.download("SI=F", period="1d", interval="1d", auto_adjust=False)
         
         if not silver_data.empty:
-            if hasattr(silver_data.columns, 'levels'):
+            if hasattr(silver_data.columns, 'levels'):  # MultiIndex check
                 silver_data.columns = silver_data.columns.droplevel(1)
             
             if "Close" in silver_data.columns:
                 spot_usd_per_ounce = float(silver_data["Close"].iloc[-1])
                 spot_inr_per_kg = spot_usd_per_ounce * 32.15 * exchange_rate
-                retail_price = int(spot_inr_per_kg * 1.07)
+                
+                # Add typical retail premium (6-8%)
+                retail_price = int(spot_inr_per_kg * 1.07)  # 7% premium
+                print(f"Calculated retail price: ₹{retail_price:,}/kg")
                 return {"currVal": retail_price}
     except Exception as e:
-        logger.error(f"Fallback failed: {e}")
+        print(f"Fallback method failed: {e}")
     
+    # Last resort fallback
     return {"currVal": 116000}
+
 
 
 def get_prices_with_premium():
