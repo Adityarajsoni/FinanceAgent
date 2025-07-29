@@ -1,7 +1,10 @@
 Flask
-gunicorn
+flask-cors
+playwright
+requests
+python-dotenv
+feedparser
 yfinance
 pandas
-requests
 google-generativeai
-flask-cors
+gunicorn
