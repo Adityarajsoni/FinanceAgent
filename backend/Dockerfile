@@ -1,21 +1,20 @@
-# Use an official Python image with Playwright and Chromium
+# Use official Playwright + Python image
 FROM mcr.microsoft.com/playwright/python:v1.40.0-jammy
 
-# Set working directory
 WORKDIR /app
 
-# Copy dependency files first (for caching)
+# Copy dependencies first
 COPY requirements.txt .
 
-# Upgrade pip and install dependencies
+# Install dependencies
 RUN pip install --upgrade pip && \
     pip install -r requirements.txt
 
-# Copy the rest of the code
+# Copy project files
 COPY . .
 
-# Expose port for Render (Render uses $PORT)
-EXPOSE 10000
+# Expose port (optional, Railway overrides it anyway)
+EXPOSE 8000
 
-# Start Flask using Gunicorn
-CMD gunicorn app:app --bind 0.0.0.0:10000
+# Run Gunicorn on dynamic port
+CMD gunicorn app:app --bind 0.0.0.0:$PORT
