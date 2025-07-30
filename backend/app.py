@@ -67,7 +67,7 @@ def get_latest_price():
                 spot_inr_per_kg = spot_usd_per_ounce * 32.15 * exchange_rate
                 
                 # Add typical retail premium (6-8%)
-                retail_price = int(spot_inr_per_kg * 1.07)  # 7% premium
+                retail_price = int(spot_inr_per_kg * 1.09)  # 7% premium
                 print(f"Calculated retail price: ₹{retail_price:,}/kg")
                 return {"currVal": retail_price}
     except Exception as e:
